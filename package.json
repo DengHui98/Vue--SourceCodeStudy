@@ -1,0 +1,19 @@
+{
+  "name": "VueSourceCodeStudy",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node scripts/dev.js reactivity --format cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.8"
+  }
+}
