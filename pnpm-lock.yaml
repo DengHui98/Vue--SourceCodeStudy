@@ -16,6 +16,14 @@ importers:
         specifier: ^0.25.8
         version: 0.25.8
 
+  packages/reactivity:
+    dependencies:
+      '@vue/shared':
+        specifier: workspace:*
+        version: link:../shared
+
+  packages/shared: {}
+
 packages:
 
   '@esbuild/aix-ppc64@0.25.8':

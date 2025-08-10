@@ -1,0 +1,19 @@
+{
+  "name": "@vue/shared",
+  "version": "1.0.0",
+  "main": "dist/shared.esm.js",
+  "module": "dist/shared.esm.js",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "sideEffects": false,
+  "buildOptions": {
+    "name": "VueShared",
+    "formats": [
+      "global",
+      "cjs",
+      "esm"
+    ]
+  }
+}

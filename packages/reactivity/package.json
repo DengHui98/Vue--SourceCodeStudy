@@ -1,0 +1,22 @@
+{
+  "name": "@vue/reactivity",
+  "version": "1.0.0",
+  "main": "dist/reactivity.esm.js",
+  "module": "dist/reactivity.esm.js",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "sideEffects": false,
+  "buildOptions": {
+    "name": "VueReactivity",
+    "formats": [
+      "global",
+      "cjs",
+      "esm"
+    ]
+  },
+  "dependencies": {
+    "@vue/shared": "workspace:*"
+  }
+}
