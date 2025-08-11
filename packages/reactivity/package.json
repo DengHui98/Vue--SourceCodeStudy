@@ -15,8 +15,5 @@
       "cjs",
       "esm"
     ]
-  },
-  "dependencies": {
-    "@vue/shared": "workspace:*"
   }
 }
