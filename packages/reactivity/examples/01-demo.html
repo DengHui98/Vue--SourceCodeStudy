@@ -7,14 +7,25 @@
   </head>
   <body>
     <script type="module">
+      // import { ref, effect } from "../../../node_modules/vue/dist/vue.esm-browser.prod.js";
       import { ref, effect } from "../dist/reactivity.esm.js";
       const count = ref(0);
-      effect(() => {
-        console.log(count.value, "----");
-      });
-      effect(() => {
-        console.log(count.value, "----");
-      });
+      const fn3 = () => {
+        console.log(count.value, "再来个内部----");
+      };
+      const fn2 = () => {
+        effect(fn3);
+        console.log(count.value, "内部----");
+      };
+      const fn1 = () => {
+        effect(fn2);
+        console.log(count.value, "外部----");
+      };
+
+      effect(fn1);
+      // effect(() => {
+      //   console.log(count.value, "2----");
+      // });
       setTimeout(() => {
         count.value = 1;
       }, 1000);

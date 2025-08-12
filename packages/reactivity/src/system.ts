@@ -1,10 +1,13 @@
+import { type EffectReactive } from "./effect";
+import { type RefImp } from "./ref";
 export interface Link {
-  subs: Function;
+  subs: EffectReactive;
   prevSub: Link | undefined;
   nextSub: Link | undefined;
 }
 
-export function link(dep, subs: Function) {
+export function link(dep: RefImp, subs: EffectReactive) {
+  // console.log(1111);
   const newLink: Link = {
     subs,
     prevSub: undefined,
@@ -29,6 +32,6 @@ export function propagate(subs: Link) {
     link = link.nextSub;
   }
   queuedEffect.forEach((subs) => {
-    subs();
+    subs.notify();
   });
 }

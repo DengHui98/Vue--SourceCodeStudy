@@ -4,7 +4,7 @@ enum ReactiveFlags {
   IS_REF = "__v_isRef",
 }
 
-class RefImp {
+export class RefImp {
   _value;
   subs: Link;
   subsTail: Link;
@@ -32,13 +32,13 @@ export function isRef(ref) {
   return !!(ref && ref[ReactiveFlags.IS_REF]);
 }
 
-export function trackRef(dep) {
+export function trackRef(dep: RefImp) {
   if (activeSub) {
     link(dep, activeSub);
   }
 }
 
-export function triggerRef(dep) {
+export function triggerRef(dep: RefImp) {
   if (dep.subs) {
     propagate(dep.subs);
   }
