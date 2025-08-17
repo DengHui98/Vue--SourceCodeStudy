@@ -1,8 +1,9 @@
 import { activeSub } from "./effect";
-import { Link, link, propagate } from "./system";
+import { Link, link, propagate, type Deps } from "./system";
 enum ReactiveFlags {
   IS_REF = "__v_isRef",
 }
+
 
 export class RefImp {
   _value;

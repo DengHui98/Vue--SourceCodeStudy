@@ -1,15 +1,37 @@
 import { type EffectReactive } from "./effect";
 import { type RefImp } from "./ref";
-export interface Link {
-  subs: EffectReactive;
-  prevSub: Link | undefined;
-  nextSub: Link | undefined;
+
+/**
+ * 订阅者
+ */
+export interface Sub {
+  deps: Link | undefined;
+  depsTail: Link | undefined;
 }
 
-export function link(dep: RefImp, subs: EffectReactive) {
-  // console.log(1111);
+export interface Link {
+  sub: EffectReactive;
+  prevSub: Link | undefined;
+  nextSub: Link | undefined;
+  dep: RefImp;
+  nextDep: Link | undefined;
+}
+
+export function link(dep: RefImp, sub: EffectReactive) {
+  // 判断是否已经收集了依赖
+  const currentDep = sub.depsTail;
+
+  const nexDep = currentDep === undefined ? sub.deps : currentDep.nextDep;
+  if (nexDep && nexDep.dep === dep) {
+    // 将 sub 指针移动
+    sub.depsTail = nexDep;
+    return;
+  }
+
   const newLink: Link = {
-    subs,
+    sub,
+    dep,
+    nextDep: undefined,
     prevSub: undefined,
     nextSub: undefined,
   };
@@ -22,13 +44,24 @@ export function link(dep: RefImp, subs: EffectReactive) {
     dep.subs = newLink;
     dep.subsTail = newLink;
   }
+
+  // 添加deps
+  if (sub.depsTail) {
+    sub.depsTail.nextDep = newLink;
+    sub.depsTail = newLink;
+  } else {
+    sub.deps = newLink;
+    sub.depsTail = newLink;
+  }
+
+  console.log(dep);
 }
 
 export function propagate(subs: Link) {
   let link: Link | undefined = subs;
   let queuedEffect = [];
   while (link) {
-    queuedEffect.push(link.subs);
+    queuedEffect.push(link.sub);
     link = link.nextSub;
   }
   queuedEffect.forEach((subs) => {
