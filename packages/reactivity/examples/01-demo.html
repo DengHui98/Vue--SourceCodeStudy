@@ -22,13 +22,10 @@
       const age = ref(18);
       const flag = ref(true);
       const name = ref("hui");
+      const count = ref(0);
 
       const e = effect(() => {
-        if (flag.value) {
-          divDOM.innerHTML = name.value;
-        } else {
-          divDOM.innerHTML = age.value;
-        }
+        console.log(count.value++);
       });
       ageBtn.addEventListener("click", () => {
         age.value++;

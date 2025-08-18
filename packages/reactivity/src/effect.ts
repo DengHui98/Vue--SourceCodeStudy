@@ -10,6 +10,8 @@ export class EffectReactive {
   deps: Link | undefined;
   depsTail: Link | undefined;
 
+  tracking = false;
+
   constructor(fn: Function) {
     this.fn = fn;
   }

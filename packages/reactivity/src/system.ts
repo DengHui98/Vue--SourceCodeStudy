@@ -71,7 +71,11 @@ export function propagate(subs: Link) {
   let link: Link | undefined = subs;
   let queuedEffect = [];
   while (link) {
-    queuedEffect.push(link.sub);
+    if (!link.sub?.tracking) {
+      // 没有正在收集依赖，出发更新
+      queuedEffect.push(link.sub);
+      continue;
+    }
     link = link.nextSub;
   }
   queuedEffect.forEach((subs) => {
@@ -128,6 +132,7 @@ export function endTracking(sub: EffectReactive) {
  * 开始收集依赖
  */
 export function startTracking(dep: EffectReactive) {
+  dep.tracking = true;
   // 将 depsTail 重置为 undefined
   dep.depsTail = undefined;
 }
