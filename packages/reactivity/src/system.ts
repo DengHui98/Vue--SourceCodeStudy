@@ -1,6 +1,5 @@
 import { type EffectReactive } from "./effect";
 import { type RefImp } from "./ref";
-import { Link } from "./system";
 
 /**
  * 订阅者
@@ -18,6 +17,8 @@ export interface Link {
   nextDep: Link | undefined;
 }
 
+let linkPool: Link | undefined = undefined;
+
 export function link(dep: RefImp, sub: EffectReactive) {
   // 判断是否已经收集了依赖
   const currentDep = sub.depsTail;
@@ -29,13 +30,23 @@ export function link(dep: RefImp, sub: EffectReactive) {
     return;
   }
 
-  const newLink: Link = {
-    sub,
-    dep,
-    nextDep: nexDep,
-    prevSub: undefined,
-    nextSub: undefined,
-  };
+  let newLink: Link | undefined = undefined;
+  if (linkPool) {
+    // 从 linkPool 中获取一个 link
+    newLink = linkPool;
+    linkPool = linkPool.nextDep;
+    newLink.nextDep = nexDep;
+    newLink.dep = dep;
+    newLink.sub = sub;
+  } else {
+    newLink = {
+      sub,
+      dep,
+      nextDep: nexDep,
+      prevSub: undefined,
+      nextSub: undefined,
+    };
+  }
   // 判断链表是否有数据
   if (dep.subsTail) {
     dep.subsTail.nextSub = newLink;
@@ -93,7 +104,9 @@ export function clearTracking(link: Link | undefined) {
     }
 
     link.dep = link.sub = undefined;
-    link.nextDep = undefined;
+    link.nextDep = linkPool;
+    linkPool = link;
+    // 将 link 赋值为下一个 link
     link = nextDep;
   }
 }
