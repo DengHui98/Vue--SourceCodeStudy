@@ -1,5 +1,6 @@
 import { type EffectReactive } from "./effect";
 import { type RefImp } from "./ref";
+import { Link } from "./system";
 
 /**
  * 订阅者
@@ -10,10 +11,10 @@ export interface Sub {
 }
 
 export interface Link {
-  sub: EffectReactive;
+  sub: EffectReactive | undefined;
   prevSub: Link | undefined;
   nextSub: Link | undefined;
-  dep: RefImp;
+  dep: RefImp | undefined;
   nextDep: Link | undefined;
 }
 
@@ -31,7 +32,7 @@ export function link(dep: RefImp, sub: EffectReactive) {
   const newLink: Link = {
     sub,
     dep,
-    nextDep: undefined,
+    nextDep: nexDep,
     prevSub: undefined,
     nextSub: undefined,
   };
@@ -53,8 +54,6 @@ export function link(dep: RefImp, sub: EffectReactive) {
     sub.deps = newLink;
     sub.depsTail = newLink;
   }
-
-  console.log(dep);
 }
 
 export function propagate(subs: Link) {
@@ -65,6 +64,57 @@ export function propagate(subs: Link) {
     link = link.nextSub;
   }
   queuedEffect.forEach((subs) => {
-    subs.notify();
+    subs?.notify();
   });
+}
+export function clearTracking(link: Link | undefined) {
+  while (link) {
+    const { dep, nextDep, prevSub, sub, nextSub } = link;
+    /**
+     * 如果 prevSub 存在，说明是链表的中间节点
+     * 如果不存在，说明是链表的头节点
+     */
+    if (prevSub) {
+      prevSub.nextSub = nextSub;
+      link.nextSub = undefined;
+    } else {
+      dep && (dep.subs = nextSub as Link);
+    }
+
+    /**
+     * 如果 nextSub 存在，说明是链表的中间节点
+     * 如果不存在，说明是链表的尾节点
+     */
+    if (nextSub) {
+      nextSub.prevSub = prevSub;
+      link.prevSub = undefined;
+    } else {
+      dep && (dep.subsTail = prevSub as Link);
+    }
+
+    link.dep = link.sub = undefined;
+    link.nextDep = undefined;
+    link = nextDep;
+  }
+}
+export function endTracking(sub: EffectReactive) {
+  const depsTail = sub.depsTail;
+  if (depsTail) {
+    if (depsTail.nextDep) {
+      // 需要清理依赖
+      clearTracking(depsTail.nextDep);
+      depsTail.nextDep = undefined;
+    }
+  } else if (sub.deps) {
+    // 清理依赖
+    clearTracking(sub.deps);
+    sub.deps = undefined;
+  }
+}
+/**
+ * 开始收集依赖
+ */
+export function startTracking(dep: EffectReactive) {
+  // 将 depsTail 重置为 undefined
+  dep.depsTail = undefined;
 }

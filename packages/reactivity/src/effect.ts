@@ -1,5 +1,5 @@
 import { RefImp } from "./ref";
-import { Link } from "./system";
+import { endTracking, Link, startTracking } from "./system";
 
 // 将effect 改造为对象
 export let activeSub: EffectReactive | undefined;
@@ -16,15 +16,17 @@ export class EffectReactive {
   run() {
     // 保存上一个的 activeSub
     this.prevSub = activeSub;
-    // 将 depsTail 重置为 undefined
-    this.depsTail = undefined;
+    startTracking(this);
     activeSub = this;
     try {
       this.fn();
     } finally {
+      // 恢复上一个的 activeSub
+      endTracking(this);
       activeSub = this.prevSub;
     }
   }
+
   /**
    * 自身的 scheduler方法， 调用run
    */
@@ -38,4 +40,5 @@ export class EffectReactive {
 export function effect(fn: any) {
   const effectIns = new EffectReactive(fn);
   effectIns.run();
+  return effectIns;
 }

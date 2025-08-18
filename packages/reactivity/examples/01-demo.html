@@ -6,42 +6,39 @@
     <title>Document</title>
   </head>
   <body>
-    <button>按钮</button>
+    <div id="show"></div>
+    <button id="btn">按钮</button>
+    <button id="name">姓名</button>
+    <button id="age">年龄</button>
     <script type="module">
       // import { ref, effect } from "../../../node_modules/vue/dist/vue.esm-browser.prod.js";
       import { ref, effect } from "../dist/reactivity.esm.js";
-      const btn = document.querySelector("button");
-      btn.addEventListener("click", () => {
-        count.value++;
+
+      const btn = document.querySelector("#btn");
+      const ageBtn = document.querySelector("#age");
+      const nameBtn = document.querySelector("#name");
+      const divDOM = document.querySelector("#show");
+
+      const age = ref(18);
+      const flag = ref(true);
+      const name = ref("hui");
+
+      const e = effect(() => {
+        if (flag.value) {
+          divDOM.innerHTML = name.value;
+        } else {
+          divDOM.innerHTML = age.value;
+        }
       });
-
-      const count = ref(0);
-      const flag = ref(false);
-      // const fn3 = () => {
-      //   console.log(count.value, "再来个内部----");
-      // };
-      // const fn2 = () => {
-      //   effect(fn3);
-      //   console.log(count.value, "内部----");
-      // };
-      const fn1 = () => {
-        // effect(fn2);
-        flag.value;
-        count.value;
-        console.log("执行函数1----");
-      };
-
-      /* const fn2 = () => {
-        count.value;
-        console.log("执行函数2----");
-      }; */
-
-      effect(fn1);
-      // effect(fn2);
-      // setTimeout(() => {
-      //   count.value = 1;
-      //   // flag.value = !flag.value;
-      // }, 1000);
+      ageBtn.addEventListener("click", () => {
+        age.value++;
+      });
+      nameBtn.addEventListener("click", () => {
+        name.value = "hui" + Math.random();
+      });
+      btn.addEventListener("click", () => {
+        flag.value = !flag.value;
+      });
     </script>
   </body>
 </html>
