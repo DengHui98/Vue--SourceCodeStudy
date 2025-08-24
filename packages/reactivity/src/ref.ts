@@ -1,16 +1,17 @@
 import { activeSub } from "./effect";
-import { Link, link, propagate, type Deps } from "./system";
+import { Link, link, propagate, Dependency } from "./system";
 enum ReactiveFlags {
   IS_REF = "__v_isRef",
 }
 
-
-export class RefImp {
+export class RefImp implements Dependency {
   _value;
+  // @ts-ignore
   subs: Link;
+  // @ts-ignore
   subsTail: Link;
   [ReactiveFlags.IS_REF] = true;
-  constructor(value) {
+  constructor(value: any) {
     this._value = value;
   }
   get value() {
@@ -25,11 +26,11 @@ export class RefImp {
   }
 }
 
-export function ref(value) {
+export function ref(value: any) {
   return new RefImp(value);
 }
 
-export function isRef(ref) {
+export function isRef(ref: any) {
   return !!(ref && ref[ReactiveFlags.IS_REF]);
 }
 

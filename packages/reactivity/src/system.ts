@@ -8,18 +8,30 @@ export interface Sub {
   deps: Link | undefined;
   depsTail: Link | undefined;
 }
+/**
+ * 依赖项
+ */
+export interface Dependency {
+  subs?: Link;
+  subsTail?: Link;
+}
 
 export interface Link {
   sub: EffectReactive | undefined;
   prevSub: Link | undefined;
   nextSub: Link | undefined;
-  dep: RefImp | undefined;
+  dep: Dependency | undefined;
   nextDep: Link | undefined;
 }
 
 let linkPool: Link | undefined = undefined;
-
-export function link(dep: RefImp, sub: EffectReactive) {
+/**
+ * 链表关系
+ * @param dep
+ * @param sub
+ * @returns
+ */
+export function link(dep: Dependency, sub: EffectReactive) {
   // 判断是否已经收集了依赖
   const currentDep = sub.depsTail;
 
@@ -66,7 +78,10 @@ export function link(dep: RefImp, sub: EffectReactive) {
     sub.depsTail = newLink;
   }
 }
-
+/**
+ * 派发依赖更新
+ * @param subs
+ */
 export function propagate(subs: Link) {
   let link: Link | undefined = subs;
   let queuedEffect = [];
@@ -74,7 +89,6 @@ export function propagate(subs: Link) {
     if (!link.sub?.tracking) {
       // 没有正在收集依赖，出发更新
       queuedEffect.push(link.sub);
-      continue;
     }
     link = link.nextSub;
   }
@@ -82,6 +96,38 @@ export function propagate(subs: Link) {
     subs?.notify();
   });
 }
+
+/**
+ * 开始收集依赖
+ */
+export function startTracking(dep: EffectReactive) {
+  dep.tracking = true;
+  // 将 depsTail 重置为 undefined
+  dep.depsTail = undefined;
+}
+
+/**
+ * 结束收集依赖
+ */
+export function endTracking(sub: EffectReactive) {
+  const depsTail = sub.depsTail;
+  sub.tracking = false;
+  if (depsTail) {
+    if (depsTail.nextDep) {
+      // 需要清理依赖
+      clearTracking(depsTail.nextDep);
+      depsTail.nextDep = undefined;
+    }
+  } else if (sub.deps) {
+    // 清理依赖
+    clearTracking(sub.deps);
+    sub.deps = undefined;
+  }
+}
+
+/**
+ * 清理依赖
+ */
 export function clearTracking(link: Link | undefined) {
   while (link) {
     const { dep, nextDep, prevSub, sub, nextSub } = link;
@@ -113,26 +159,4 @@ export function clearTracking(link: Link | undefined) {
     // 将 link 赋值为下一个 link
     link = nextDep;
   }
-}
-export function endTracking(sub: EffectReactive) {
-  const depsTail = sub.depsTail;
-  if (depsTail) {
-    if (depsTail.nextDep) {
-      // 需要清理依赖
-      clearTracking(depsTail.nextDep);
-      depsTail.nextDep = undefined;
-    }
-  } else if (sub.deps) {
-    // 清理依赖
-    clearTracking(sub.deps);
-    sub.deps = undefined;
-  }
-}
-/**
- * 开始收集依赖
- */
-export function startTracking(dep: EffectReactive) {
-  dep.tracking = true;
-  // 将 depsTail 重置为 undefined
-  dep.depsTail = undefined;
 }
