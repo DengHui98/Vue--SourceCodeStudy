@@ -15,5 +15,8 @@
       "cjs",
       "esm"
     ]
-  }
+  },
+  "workspaces": [
+    "packages/shared"
+  ]
 }

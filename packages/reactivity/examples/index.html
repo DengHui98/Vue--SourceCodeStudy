@@ -8,17 +8,19 @@
   <body>
     <div id="show"></div>
     <script type="module">
-      // import { ref, effect } from "../../../node_modules/vue/dist/vue.esm-browser.prod.js";
+      // import { ref, effect, reactive } from "../../../node_modules/vue/dist/vue.esm-browser.prod.js";
       import { ref, effect, reactive } from "../dist/reactivity.esm.js";
+      const count = ref(0);
       const obj = reactive({
-        name: "xiaoming",
-        age: 20,
+        a: {
+          b: 1,
+        },
       });
       effect(() => {
-        console.log(obj.age);
+        console.log(obj.a.b);
       });
       setTimeout(() => {
-        obj.age++;
+        obj.a.b = 2;
       }, 1000);
     </script>
   </body>

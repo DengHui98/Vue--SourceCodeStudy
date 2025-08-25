@@ -29,7 +29,11 @@ export class RefImp implements Dependency {
 export function ref(value: any) {
   return new RefImp(value);
 }
-
+/**
+ * 判断是否是 ref 对象
+ * @param res
+ * @returns
+ */
 export function isRef(ref: any) {
   return !!(ref && ref[ReactiveFlags.IS_REF]);
 }

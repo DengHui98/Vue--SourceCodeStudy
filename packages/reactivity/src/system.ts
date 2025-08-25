@@ -1,5 +1,4 @@
 import { type EffectReactive } from "./effect";
-import { type RefImp } from "./ref";
 
 /**
  * 订阅者

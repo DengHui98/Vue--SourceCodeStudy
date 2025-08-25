@@ -1,89 +1,45 @@
-import { activeSub } from "./effect";
-import { Link, link, propagate } from "./system";
+import { handler } from "./baseHandlers";
+import { isObject } from "@vue/shared";
 
+/**
+ * 创建 reactive 对象
+ * @param target
+ * @returns
+ */
+
+const reactiveMap: WeakMap<object, any> = new WeakMap();
+const isProxySet = new Set<object>();
+/**
+ * 判断是否是代理对象
+ * @param obj - 对象
+ */
+function isProxy(obj: any) {
+  return isProxySet.has(obj);
+}
 function createReactive(target: any) {
-  return new Proxy(target, handler);
-}
-
-/**
- *
- */
-const handler = {
-  get(target, prop, receiver) {
-    // 获取代理
-    track(target, prop);
-    return Reflect.get(target, prop, receiver);
-  },
-  set(traget, prop, newValue, receiver) {
-    const res = Reflect.set(traget, prop, newValue, receiver);
-    // 派发更新
-    trigger(traget, prop);
-    return res;
-  },
-};
-
-/**
- * 绑定 target 的 key 关联的所有的 Dep
- * obj = { a:0, b:1 }
- * targetMap = {
- *  [obj]:{
- *    a:Dep,
- *    b:Dep
- *  }
- * }
- */
-type TargetMap = WeakMap<object, Map<string | number | symbol, Dep>>;
-const targetMap: TargetMap = new WeakMap();
-/**
- * 收集依赖
- */
-function track(target: any, key: any) {
-  // 如果 activeSub 为空，取消依赖收集
-  if (!activeSub) {
-    return;
+  // 如果是非对象，则直接返回
+  if (!isObject(target)) {
+    return target;
+  }
+  // 如果传入的是代理对象，直接返回
+  if (isProxy(target)) {
+    return target;
   }
 
-  // 找对象是否收集过依赖
-  let depsMap = targetMap.get(target);
-  // 如果找不到，创建依赖关系
-  if (!depsMap) {
-    depsMap = new Map();
-    targetMap.set(target, depsMap);
+  // 判断当前对象是否已经代理
+  if (reactiveMap.has(target)) {
+    // 直接返回代理对象
+    return reactiveMap.get(target);
   }
-  // 找键
-  let dep = depsMap.get(key);
-  // 如果键也找不到，继续创建依赖关系
-  if (!dep) {
-    dep = new Dep();
-    depsMap.set(key, dep);
-  }
+  // 创建代理对象
+  const res = new Proxy(target, handler);
 
-  // 绑定依赖关系
-  link(dep, activeSub);
-}
+  // 将代理对象和对象绑定
+  reactiveMap.set(target, res);
+  // 保存代理对象列表
+  isProxySet.add(res);
 
-/**
- * 触发更新
- */
-function trigger(target: any, key: any) {
-  // 寻找 这个对象是否在 targetMap 中
-  const depsMap = targetMap.get(target);
-  // 没找到，直接返回
-  if (!depsMap) {
-    return;
-  }
-  // 找对应的key
-  const dep = depsMap.get(key);
-  if (!dep) {
-    return;
-  }
-
-  propagate(dep.subs as Link);
-}
-
-class Dep {
-  subs?: Link;
-  subsTail?: Link;
+  return res;
 }
 
 export function reactive(target: any) {
