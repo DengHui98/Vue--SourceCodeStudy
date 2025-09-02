@@ -14,13 +14,18 @@
 
       const count = ref(0);
 
-      effect(() => {
-        console.log(count.value);
-        console.log(count.value);
+      const c = computed(() => {
+        console.count("computed");
+        return count.value + 1;
       });
-      setTimeout(() => {
-        count.value = 1;
-      });
+      c.value;
+      c.value;
+      c.value;
+      c.value;
+      c.value;
+      c.value;
+      c.value;
+      count.value = 1;
     </script>
   </body>
 </html>

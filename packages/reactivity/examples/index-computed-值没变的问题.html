@@ -14,10 +14,13 @@
 
       const count = ref(0);
 
-      effect(() => {
-        console.log(count.value);
-        console.log(count.value);
+      const c = computed(() => {
+        console.count("computed");
+        return count.value * 0;
       });
+      effect(() => {
+        console.log(c.value);
+      })
       setTimeout(() => {
         count.value = 1;
       });

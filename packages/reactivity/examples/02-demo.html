@@ -8,19 +8,20 @@
   <body>
     <div id="show"></div>
     <script type="module">
-      // 计算属性
       // import { ref, effect, reactive } from "../../../node_modules/vue/dist/vue.esm-browser.prod.js";
-      import { ref, effect, computed } from "../dist/reactivity.esm.js";
-
+      import { ref, effect, reactive } from "../dist/reactivity.esm.js";
       const count = ref(0);
-
+      const obj = reactive({
+        a: {
+          b: 1,
+        },
+      });
       effect(() => {
-        console.log(count.value);
-        console.log(count.value);
+        console.log(obj.a.b);
       });
       setTimeout(() => {
-        count.value = 1;
-      });
+        obj.a.b = 2;
+      }, 1000);
     </script>
   </body>
 </html>

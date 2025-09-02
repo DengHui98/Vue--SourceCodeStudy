@@ -1,16 +1,22 @@
 import { RefImp } from "./ref";
-import { endTracking, Link, startTracking } from "./system";
+import { endTracking, Link, startTracking, Sub } from "./system";
 
 // 将effect 改造为对象
 export let activeSub: EffectReactive | undefined;
 
-export class EffectReactive {
+export function setActiveSub(sub: any) {
+  activeSub = sub;
+}
+
+export class EffectReactive implements Sub {
   fn: Function;
   prevSub: EffectReactive | undefined;
   deps: Link | undefined;
   depsTail: Link | undefined;
 
   tracking = false;
+
+  dirty = false;
 
   constructor(fn: Function) {
     this.fn = fn;
@@ -19,13 +25,13 @@ export class EffectReactive {
     // 保存上一个的 activeSub
     this.prevSub = activeSub;
     startTracking(this);
-    activeSub = this;
+    setActiveSub(this);
     try {
       this.fn();
     } finally {
       // 恢复上一个的 activeSub
       endTracking(this);
-      activeSub = this.prevSub;
+      setActiveSub(this.prevSub);
     }
   }
 

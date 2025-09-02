@@ -1,4 +1,5 @@
 import { type EffectReactive } from "./effect";
+import { type ComputedRefImp } from "./computed";
 
 /**
  * 订阅者
@@ -6,17 +7,18 @@ import { type EffectReactive } from "./effect";
 export interface Sub {
   deps: Link | undefined;
   depsTail: Link | undefined;
+  tracking: boolean;
 }
 /**
  * 依赖项
  */
 export interface Dependency {
-  subs?: Link;
-  subsTail?: Link;
+  subs: Link | undefined;
+  subsTail: Link | undefined;
 }
 
 export interface Link {
-  sub: EffectReactive | undefined;
+  sub: EffectReactive | ComputedRefImp | undefined;
   prevSub: Link | undefined;
   nextSub: Link | undefined;
   dep: Dependency | undefined;
@@ -78,6 +80,14 @@ export function link(dep: Dependency, sub: EffectReactive) {
   }
 }
 /**
+ * 更新计算属性
+ */
+function processComputedUpdate(sub: ComputedRefImp) {
+  if (sub.subs && sub.update()) {
+    propagate(sub.subs);
+  }
+}
+/**
  * 派发依赖更新
  * @param subs
  */
@@ -85,9 +95,15 @@ export function propagate(subs: Link) {
   let link: Link | undefined = subs;
   let queuedEffect = [];
   while (link) {
-    if (!link.sub?.tracking) {
-      // 没有正在收集依赖，出发更新
-      queuedEffect.push(link.sub);
+    const sub = link.sub;
+    if (sub && !sub.tracking && !sub.dirty) {
+      sub.dirty = true;
+      if ("update" in sub) {
+        processComputedUpdate(sub);
+      } else {
+        // 没有正在收集依赖，出发更新
+        queuedEffect.push(sub);
+      }
     }
     link = link.nextSub;
   }
@@ -99,7 +115,7 @@ export function propagate(subs: Link) {
 /**
  * 开始收集依赖
  */
-export function startTracking(dep: EffectReactive) {
+export function startTracking(dep: Sub) {
   dep.tracking = true;
   // 将 depsTail 重置为 undefined
   dep.depsTail = undefined;
@@ -108,7 +124,7 @@ export function startTracking(dep: EffectReactive) {
 /**
  * 结束收集依赖
  */
-export function endTracking(sub: EffectReactive) {
+export function endTracking(sub: Sub) {
   const depsTail = sub.depsTail;
   sub.tracking = false;
   if (depsTail) {
