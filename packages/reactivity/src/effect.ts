@@ -24,10 +24,11 @@ export class EffectReactive implements Sub {
   run() {
     // 保存上一个的 activeSub
     this.prevSub = activeSub;
+    this.dirty = false;
     startTracking(this);
     setActiveSub(this);
     try {
-      this.fn();
+      return this.fn();
     } finally {
       // 恢复上一个的 activeSub
       endTracking(this);
@@ -43,6 +44,10 @@ export class EffectReactive implements Sub {
   }
   notify() {
     this.scheduler();
+  }
+  stop() {
+    startTracking(this);
+    endTracking(this);
   }
 }
 export function effect(fn: any) {

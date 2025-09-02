@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="show"></div>
+    <script type="module">
+      // 计算属性
+      // import { ref, effect, reactive } from "../../../node_modules/vue/dist/vue.esm-browser.prod.js";
+      import { ref, effect, watch } from "../dist/reactivity.esm.js";
+      const count = ref(0);
+      const stop = watch(count, (newVal, oldVal) => {
+        console.log(newVal, oldVal);
+      });
+      setTimeout(() => {
+        count.value = 1;
+        setTimeout(() => {
+          // stop()
+          count.value = 2;
+        }, 1000);
+      }, 1000);
+    </script>
+  </body>
+</html>
