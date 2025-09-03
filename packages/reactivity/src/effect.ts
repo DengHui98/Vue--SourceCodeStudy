@@ -1,4 +1,3 @@
-import { RefImp } from "./ref";
 import { endTracking, Link, startTracking, Sub } from "./system";
 
 // 将effect 改造为对象

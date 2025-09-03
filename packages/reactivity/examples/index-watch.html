@@ -11,16 +11,27 @@
       // 计算属性
       // import { ref, effect, reactive } from "../../../node_modules/vue/dist/vue.esm-browser.prod.js";
       import { ref, effect, watch } from "../dist/reactivity.esm.js";
-      const count = ref(0);
-      const stop = watch(count, (newVal, oldVal) => {
-        console.log(newVal, oldVal);
+      // const count = ref(0);
+      const count = ref({
+        a: {
+          b: {
+            c: 1,
+          },
+        },
       });
+      const stop = watch(
+        count,
+        (newVal, oldVal) => {
+          console.log(newVal, oldVal);
+        },
+        {
+          // immediate: true,
+          // once: true,
+          deep: true,
+        }
+      );
       setTimeout(() => {
-        count.value = 1;
-        setTimeout(() => {
-          // stop()
-          count.value = 2;
-        }, 1000);
+        count.value.a.b.c = 3;
       }, 1000);
     </script>
   </body>

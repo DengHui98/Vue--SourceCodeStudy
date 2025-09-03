@@ -10,17 +10,38 @@
     <script type="module">
       // 计算属性
       // import { ref, effect, reactive } from "../../../node_modules/vue/dist/vue.esm-browser.prod.js";
-      import { ref, effect, computed } from "../dist/reactivity.esm.js";
-
-      const count = ref(0);
-
-      effect(() => {
-        console.log(count.value);
-        console.log(count.value);
+      import { ref, reactive, watch } from "../dist/reactivity.esm.js";
+      // const count = ref(0);
+      // const count = ref({
+      //   a: {
+      //     b: {
+      //       c: 1,
+      //     },
+      //   },
+      // });
+      const count = ref({
+        a: {
+          b: 1,
+          c: {
+            d: 1,
+          },
+        },
       });
+      // count.value.c = count.value;
+      const stop = watch(
+        count,
+        (newVal, oldVal) => {
+          console.log(newVal, oldVal);
+        },
+        {
+          // immediate: true,
+          // once: true,
+          deep: 1,
+        }
+      );
       setTimeout(() => {
-        count.value = 1;
-      });
+        count.value.a.b = 3;
+      }, 1000);
     </script>
   </body>
 </html>

@@ -1,5 +1,7 @@
+import { isObject } from "@vue/shared";
 import { activeSub } from "./effect";
 import { Link, link, propagate, Dependency } from "./system";
+import { reactive } from "./reactive";
 export enum ReactiveFlags {
   IS_REF = "__v_isRef",
 }
@@ -12,7 +14,7 @@ export class RefImp implements Dependency {
   subsTail: Link;
   [ReactiveFlags.IS_REF] = true;
   constructor(value: any) {
-    this._value = value;
+    this._value = isObject(value) ? reactive(value) : value;
   }
   get value() {
     trackRef(this);

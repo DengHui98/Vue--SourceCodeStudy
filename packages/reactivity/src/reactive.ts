@@ -42,6 +42,10 @@ function createReactive(target: any) {
   return res;
 }
 
+export function isReactive(value: any) {
+  return isProxySet.has(value)
+}
+
 export function reactive(target: any) {
   return createReactive(target);
 }
