@@ -55,6 +55,20 @@ export function trigger(target: any, key: any) {
   if (!depsMap) {
     return;
   }
+  const isArray = Array.isArray(target);
+  /**
+   * 参数是数组
+   * 并且更新的是length
+   * 手动触发更新
+   */
+  if (isArray && key === "length") {
+    depsMap.forEach((dep, depKey) => {
+      if (+(depKey as string) >= target.length) {
+        propagate(dep.subs as Link);
+      }
+    });
+    return;
+  }
   // 找对应的key
   const dep = depsMap.get(key);
   if (!dep) {

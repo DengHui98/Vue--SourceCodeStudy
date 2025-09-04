@@ -23,18 +23,27 @@ export const handler = {
   },
   set(traget, prop, newValue, receiver) {
     const oldValue = traget[prop];
-    const res = Reflect.set(traget, prop, newValue, receiver);
     // 如果旧值是ref， 新值不是ref， 同时更新ref
     if (isRef(oldValue) && !isRef(newValue)) {
       oldValue.value = newValue;
-      return res;
+      return true;
     }
+    const isArray = Array.isArray(traget);
+    const oldLength = isArray ? traget.length : 0;
+    const res = Reflect.set(traget, prop, newValue, receiver);
 
     // 只有设置新值，才会派发更新
     if (hasChanged(oldValue, newValue)) {
       // 派发更新
       trigger(traget, prop);
     }
+
+    const newLength = isArray ? traget.length : 0;
+
+    if (isArray && oldLength !== newLength && prop !== "length") {
+      trigger(traget, "length");
+    }
+
     return res;
   },
 };
