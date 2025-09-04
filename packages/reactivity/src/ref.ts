@@ -1,5 +1,5 @@
 import { isObject } from "@vue/shared";
-import { activeSub } from "./effect";
+import { activeSub, EffectReactive } from "./effect";
 import { Link, link, propagate, Dependency } from "./system";
 import { reactive } from "./reactive";
 export enum ReactiveFlags {
@@ -50,4 +50,48 @@ export function triggerRef(dep: RefImp) {
   if (dep.subs) {
     propagate(dep.subs);
   }
+}
+
+class ObjectRefImpl {
+  [ReactiveFlags.IS_REF] = true;
+  constructor(public _object: any, public _key: any) {}
+  get value() {
+    return this._object[this._key];
+  }
+  set value(newValue) {
+    this._object[this._key] = newValue;
+  }
+}
+
+export function toRef(target: any, key: any) {
+  return new ObjectRefImpl(target, key);
+}
+
+export function toRefs(target: []) {
+  let res: Record<string, ObjectRefImpl> = {};
+  for (const key in target) {
+    res[key] = toRef(target, key);
+  }
+  return res;
+}
+
+export function unRef(ref: RefImp) {
+  return isRef(ref) ? ref.value : ref;
+}
+
+export function proxyRefs(target: any) {
+  return new Proxy(target, {
+    get(...args) {
+      const res = Reflect.get(...args);
+      return unRef(res);
+    },
+    set(target, key, newValue, receiver) {
+      const oldValue = target[key];
+      if (isRef(oldValue) && !isRef(newValue)) {
+        oldValue.value = newValue;
+        return true;
+      }
+      return Reflect.set(target, key, newValue, receiver);
+    },
+  });
 }

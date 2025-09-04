@@ -9,13 +9,22 @@
     <script type="module">
       // 计算属性
       // import { ref, effect, reactive } from "../../../node_modules/vue/dist/vue.esm-browser.prod.js";
-      import { effect, reactive, watch } from "../dist/reactivity.esm.js";
-      const arr = reactive(["a", "b", "c", "d"]);
-      effect(() => {
-        console.log(arr[2]);
+      import { effect, reactive, toRef, toRefs, proxyRefs } from "../dist/reactivity.esm.js";
+      const obj = reactive({
+        name: "xiaoming",
+        age: 20,
       });
+      const res = proxyRefs({
+        ...toRefs(obj),
+      });
+      console.log(res);
+
+      effect(() => {
+        console.log(res.name);
+      });
+
       setTimeout(() => {
-        arr.length = 2;
+        res.name = "xiaohong";
       }, 1000);
     </script>
   </body>
