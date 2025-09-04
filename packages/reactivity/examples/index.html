@@ -4,44 +4,48 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style>
+      #app1,
+      #app2 {
+        width: 100px;
+        height: 100px;
+        background-color: aqua;
+      }
+      #app2 {
+        background: #000;
+      }
+    </style>
   </head>
   <body>
-    <div id="show"></div>
+    <div id="app1"></div>
+    <div id="app2"></div>
+    <button id="btn">btn</button>
     <script type="module">
       // 计算属性
       // import { ref, effect, reactive } from "../../../node_modules/vue/dist/vue.esm-browser.prod.js";
       import { ref, reactive, watch } from "../dist/reactivity.esm.js";
-      // const count = ref(0);
-      // const count = ref({
-      //   a: {
-      //     b: {
-      //       c: 1,
-      //     },
-      //   },
-      // });
-      const count = ref({
-        a: {
-          b: 1,
-          c: {
-            d: 1,
-          },
-        },
-      });
-      // count.value.c = count.value;
-      const stop = watch(
-        count,
-        (newVal, oldVal) => {
-          console.log(newVal, oldVal);
+      const flag = ref(true);
+      watch(
+        flag,
+        (newVal, oldVal, onCleanup) => {
+          console.log(onCleanup);
+          const dom = flag.value ? document.querySelector("#app1") : document.querySelector("#app2");
+          const handleEvent = () => {
+            const logText = flag.value ? "app1" : "app2";
+            console.log(logText);
+          };
+          dom.addEventListener("click", handleEvent);
+          onCleanup(() => {
+            dom.removeEventListener("click", handleEvent);
+          });
         },
         {
-          // immediate: true,
-          // once: true,
-          deep: 1,
+          immediate: true,
         }
       );
-      setTimeout(() => {
-        count.value.a.b = 3;
-      }, 1000);
+      document.querySelector("#btn").addEventListener("click", () => {
+        flag.value = !flag.value;
+      });
     </script>
   </body>
 </html>

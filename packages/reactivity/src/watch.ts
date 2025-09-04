@@ -19,14 +19,17 @@ export function watch(source: any, cb: Function, options: any = {}) {
     getter = () => travers(baseGetter(), deep, new Set());
   }
 
+  let cleanup: Function;
+
   // 旧值
   let oldValue: any;
 
   function job() {
+    cleanup && cleanup();
     // 重新收集依赖
     const newValue = effect.run();
     // 调用回调函数
-    cb(newValue, oldValue);
+    cb(newValue, oldValue, (fn: Function) => (cleanup = fn));
     // 将新值复制给旧值
     oldValue = newValue;
   }
