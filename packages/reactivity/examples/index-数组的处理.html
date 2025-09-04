@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script type="module">
+      // 计算属性
+      // import { ref, effect, reactive } from "../../../node_modules/vue/dist/vue.esm-browser.prod.js";
+      import { effect, reactive, watch } from "../dist/reactivity.esm.js";
+      const arr = reactive(["a", "b", "c", "d"]);
+      effect(() => {
+        console.log(arr[2]);
+      });
+      setTimeout(() => {
+        arr.length = 2;
+      }, 1000);
+    </script>
+  </body>
+</html>
