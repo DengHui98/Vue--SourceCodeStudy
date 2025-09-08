@@ -1,5 +1,5 @@
 import { handler } from "./baseHandlers";
-import { isObject } from "@vue/shared";
+import { isObject } from "packages/shared/src/uitls";
 
 /**
  * 创建 reactive 对象
@@ -43,7 +43,7 @@ function createReactive(target: any) {
 }
 
 export function isReactive(value: any) {
-  return isProxySet.has(value)
+  return isProxySet.has(value);
 }
 
 export function reactive(target: any) {

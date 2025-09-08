@@ -1,4 +1,4 @@
-import { isObject } from "@vue/shared";
+import { isObject } from "packages/shared/src/uitls";
 import { activeSub, EffectReactive } from "./effect";
 import { Link, link, propagate, Dependency } from "./system";
 import { reactive } from "./reactive";

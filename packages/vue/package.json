@@ -1,0 +1,25 @@
+{
+  "name": "vue",
+  "version": "1.0.0",
+  "main": "dist/vue.esm.js",
+  "module": "dist/vue.esm.js",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "sideEffects": false,
+  "buildOptions": {
+    "name": "vue",
+    "formats": [
+      "global",
+      "cjs",
+      "esm"
+    ]
+  },
+  "workspaces": [
+    "packages/shared"
+  ],
+  "dependencies": {
+    "@vue/runtime-dom": "workspace:*"
+  }
+}

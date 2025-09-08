@@ -1,4 +1,4 @@
-import { hasChanged, isFunction } from "@vue/shared";
+import { hasChanged, isFunction } from "packages/shared/src/uitls";
 import { ReactiveFlags } from "./ref";
 import { Dependency, endTracking, link, Link, startTracking, Sub } from "./system";
 import { activeSub, setActiveSub } from "./effect";

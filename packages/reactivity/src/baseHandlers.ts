@@ -1,4 +1,4 @@
-import { isObject, hasChanged } from "@vue/shared";
+import { isObject, hasChanged } from "packages/shared/src/uitls";
 import { reactive } from "./reactive";
 import { track, trigger } from "./dep";
 import { isRef } from "./ref";

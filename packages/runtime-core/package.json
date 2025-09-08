@@ -1,0 +1,26 @@
+{
+  "name": "@vue/runtime-core",
+  "version": "1.0.0",
+  "main": "dist/runtime-core.esm.js",
+  "module": "dist/runtime-core.esm.js",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "sideEffects": false,
+  "buildOptions": {
+    "name": "runtime-core",
+    "formats": [
+      "global",
+      "cjs",
+      "esm"
+    ]
+  },
+  "workspaces": [
+    "packages/shared"
+  ],
+  "dependencies": {
+    "@vue/reactivity": "workspace:*",
+    "@vue/shared": "workspace:*"
+  }
+}

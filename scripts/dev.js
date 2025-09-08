@@ -19,7 +19,7 @@ const {
   },
 });
 const require = createRequire(import.meta.url);
-const target = positionals[0] || "vue3";
+const target = positionals[0] || "vue";
 const entry = resolve(__dirname, `../packages/${target}/src/index.ts`);
 const outfile = resolve(__dirname, `../packages/${target}/dist/${target}.${format}.js`);
 const pkg = require(`../packages/${target}/package.json`);

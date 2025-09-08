@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "node scripts/dev.js reactivity --format esm"
+    "build": "node scripts/dev.js --format esm"
   },
   "keywords": [],
   "author": "",
